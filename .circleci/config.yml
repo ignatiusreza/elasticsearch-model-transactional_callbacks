@@ -1,0 +1,26 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/ruby:2.6
+    steps:
+      - checkout
+
+      - restore_cache:
+          name: Restore Bundler Cache
+          keys:
+            - bundler--{{ checksum "Gemfile" }}--{{ checksum "elasticsearch-model-transactional_callbacks.gemspec" }}
+            - bundler--{{ checksum "Gemfile" }}
+            - bundler
+
+      - run: bundle check || bundle install
+
+      - save_cache:
+          key: bundler--{{ checksum "Gemfile" }}--{{ checksum "elasticsearch-model-transactional_callbacks.gemspec" }}
+          paths:
+            - ~/.cache/bundle
+
+      - run: bundle exec rake test
+
+      - store_test_results:
+          path: test/reports
