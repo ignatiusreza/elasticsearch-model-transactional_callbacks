@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'elasticsearch/model/transactional_callbacks/railtie'
 require 'elasticsearch/model'
+require_relative './transactional_callbacks/railtie'
+require_relative './transactional_callbacks/bulk_indexing_job'
 
 module Elasticsearch
   module Model
