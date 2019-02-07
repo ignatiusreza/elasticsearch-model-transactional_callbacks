@@ -3,14 +3,8 @@
 require 'test_helper'
 
 class Elasticsearch::Model::TransactionalCallbacks::Test < ActiveSupport::TestCase
-  def setup
-    super
-
+  setup do
     create_elasticsearch_index!
-  end
-
-  test 'truth' do
-    assert_kind_of Module, Elasticsearch::Model::TransactionalCallbacks
   end
 
   private
@@ -30,5 +24,17 @@ class Elasticsearch::Model::TransactionalCallbacks::Test < ActiveSupport::TestCa
 
     def delete_elasticsearch_index!
       User.__elasticsearch__.client.indices.delete index: User.index_name, ignore: 404
+    end
+
+    def fetch(resource, parent = nil)
+      klass = resource.class
+
+      Elasticsearch::Model.client.get({
+        index: klass.index_name,
+        type: klass.document_type,
+        id: resource.id,
+        parent: parent&.id,
+        refresh: true
+      }.compact)
     end
 end
