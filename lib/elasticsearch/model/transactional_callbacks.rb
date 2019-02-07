@@ -3,6 +3,7 @@
 require 'elasticsearch/model'
 require_relative './transactional_callbacks/railtie'
 require_relative './transactional_callbacks/bulk_indexing_job'
+require_relative './transactional_callbacks/queue'
 
 module Elasticsearch
   module Model

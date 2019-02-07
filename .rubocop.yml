@@ -6,6 +6,9 @@ AllCops:
 Layout/IndentationConsistency:
   EnforcedStyle: rails
 
+Layout/IndentHash:
+  EnforcedStyle: consistent
+
 Metrics/LineLength:
   Max: 120
 
