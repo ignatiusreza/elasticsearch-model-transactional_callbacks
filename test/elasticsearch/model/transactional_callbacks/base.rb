@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-require 'test_helper'
-
-class Elasticsearch::Model::TransactionalCallbacks::Test < ActiveSupport::TestCase
+class Elasticsearch::Model::TransactionalCallbacks::BaseTest < ActiveSupport::TestCase
   setup do
     create_elasticsearch_index!
+    import_fixtures!
   end
 
   private
@@ -26,6 +25,15 @@ class Elasticsearch::Model::TransactionalCallbacks::Test < ActiveSupport::TestCa
       User.__elasticsearch__.client.indices.delete index: User.index_name, ignore: 404
     end
 
+    def import_fixtures!
+      transform = lambda { |post|
+        { index: { _id: post.id, _parent: post.user_id, data: post.__elasticsearch__.as_indexed_json } }
+      }
+
+      User.import
+      Post.import transform: transform
+    end
+
     def fetch(resource, parent = nil)
       klass = resource.class
 
@@ -36,5 +44,17 @@ class Elasticsearch::Model::TransactionalCallbacks::Test < ActiveSupport::TestCa
         parent: parent&.id,
         refresh: true
       }.compact)
+    end
+
+    def assert_indexed(*arguments)
+      assert_nothing_raised do
+        fetch(*arguments)
+      end
+    end
+
+    def assert_not_indexed(*arguments)
+      assert_raise(Elasticsearch::Transport::Transport::Errors::NotFound) do
+        fetch(*arguments)
+      end
     end
 end

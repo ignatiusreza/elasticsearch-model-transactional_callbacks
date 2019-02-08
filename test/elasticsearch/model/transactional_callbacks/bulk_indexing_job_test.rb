@@ -1,22 +1,19 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require_relative '../transactional_callbacks_test'
 
 module Elasticsearch::Model::TransactionalCallbacks
-  class BulkIndexingJob::Test < Test
+  class BulkIndexingJob::Test < BaseTest
     test 'indexing new documents' do
-      described_class.perform_now(
-        user: {
-          index: [
-            { _id: users(:neil).id },
-            { _id: users(:dewi).id }
-          ]
-        }
-      )
+      users = Array.new(2) { |n| User.create! name: "new user#{n}" }
 
-      assert fetch users(:neil)
-      assert fetch users(:dewi)
+      assert_not_indexed users[0]
+      assert_not_indexed users[1]
+
+      described_class.perform_now user: { index: users.map { |user| { _id: user.id } } }
+
+      assert_indexed users[0]
+      assert_indexed users[1]
     end
 
     test 'updating indexed documents' do
@@ -24,37 +21,36 @@ module Elasticsearch::Model::TransactionalCallbacks
       old_name = user.name
       new_name = 'Neil Richard Gaiman'
 
-      described_class.perform_now user: { index: [{ _id: user.id }] }
+      assert_equal old_name, fetch(user).dig('_source', 'name')
+      refute_equal old_name, new_name
 
       user.update name: new_name
 
       described_class.perform_now user: { update: [{ _id: user.id }] }
 
       assert_equal new_name, fetch(user).dig('_source', 'name')
-      refute_equal old_name, new_name
     end
 
     test 'deleting indexed documents' do
       user = users :neil
 
-      described_class.perform_now user: { index: [{ _id: user.id }] }
-
-      assert fetch user
+      assert_indexed user
 
       described_class.perform_now user: { delete: [{ _id: user.id }] }
 
-      assert_raise(Elasticsearch::Transport::Transport::Errors::NotFound) { fetch user }
+      assert_not_indexed user
     end
 
     test 'indexing new child documents' do
-      post = posts(:neverwhere)
+      post = Post.create! subject: 'new post', user: users(:neil)
+
+      assert_not_indexed post, post.user
 
       described_class.perform_now(
-        user: { index: [{ _id: users(:neil).id }] },
         post: { index: [{ _id: post.id, _parent: post.user_id }] }
       )
 
-      assert fetch post, post.user
+      assert_indexed post, post.user
     end
 
     test 'updating indexed child documents' do
@@ -62,38 +58,30 @@ module Elasticsearch::Model::TransactionalCallbacks
       old_subject = post.subject
       new_subject = 'The Seven Sisters'
 
-      described_class.perform_now(
-        user: { index: [{ _id: post.user_id }] },
-        post: { index: [{ _id: post.id, _parent: post.user_id }] }
-      )
-
-      assert fetch post, post.user
+      assert_equal old_subject, fetch(post, post.user).dig('_source', 'subject')
+      refute_equal old_subject, new_subject
 
       post.update subject: new_subject
 
       described_class.perform_now post: { update: [{ _id: post.id, _parent: post.user_id }] }
 
       assert_equal new_subject, fetch(post, post.user).dig('_source', 'subject')
-      refute_equal old_subject, new_subject
     end
 
     test 'deleting indexed child documents' do
       post = posts(:neverwhere)
 
-      described_class.perform_now(
-        user: { index: [{ _id: users(:neil).id }] },
-        post: { index: [{ _id: post.id, _parent: post.user_id }] }
-      )
-
-      assert fetch post, post.user
+      assert_indexed post, post.user
 
       described_class.perform_now post: { delete: [{ _id: post.id, _parent: post.user_id }] }
 
-      assert_raise(Elasticsearch::Transport::Transport::Errors::NotFound) { fetch post, post.user }
+      assert_not_indexed post, post.user
     end
 
     test 'indexing missing documents' do
-      assert described_class.perform_now user: { index: [{ _id: 404 }] }
+      assert_nothing_raised do
+        described_class.perform_now user: { index: [{ _id: 404 }] }
+      end
     end
 
     test 'logging errors' do

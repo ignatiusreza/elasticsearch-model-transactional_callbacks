@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require_relative '../transactional_callbacks_test'
 
 module Elasticsearch::Model::TransactionalCallbacks
-  class Queue::Test < Test
+  class Queue::Test < BaseTest
     attr_reader :queue
 
     setup do
