@@ -4,6 +4,8 @@ require 'test_helper'
 
 module Elasticsearch::Model::TransactionalCallbacks
   class BulkIndexingJob::Test < BaseTest
+    include ActiveJob::TestHelper
+
     test 'indexing new documents' do
       users = Array.new(2) { |n| User.create! name: "new user#{n}" }
 

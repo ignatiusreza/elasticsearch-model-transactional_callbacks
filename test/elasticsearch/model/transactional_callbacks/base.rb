@@ -46,6 +46,16 @@ class Elasticsearch::Model::TransactionalCallbacks::BaseTest < ActiveSupport::Te
       }.compact)
     end
 
+    def next_id_for(resource)
+      query = "SELECT seq FROM sqlite_sequence WHERE name = '#{resource}'"
+
+      ActiveRecord::Base.connection.execute(query).dig(0, 'seq') + 1
+    end
+
+    def indexing_job_class
+      Elasticsearch::Model::TransactionalCallbacks::BulkIndexingJob
+    end
+
     def assert_indexed(*arguments)
       assert_nothing_raised do
         fetch(*arguments)

@@ -20,12 +20,15 @@ module Elasticsearch
         end
 
         def push(action, resource)
-          type = document_type(resource)
+          do_push action, resource, _id: resource.id, _parent: parent_id(resource)
+        end
 
-          prepare_state_for(type)
+        def push_all(action, relation)
+          return unless ::Elasticsearch::Model::TransactionalCallbacks.in?(relation.included_modules)
 
-          state[type][action] << { _id: resource.id, _parent: parent_id(resource) }.compact
-          state[type][action].uniq!
+          pluck_ids(relation) do |ids|
+            do_push action, relation, ids
+          end
         end
 
         def to_h
@@ -33,6 +36,15 @@ module Elasticsearch
         end
 
         private
+
+          def do_push(action, resource_or_relation, options)
+            type = document_type(resource_or_relation)
+
+            prepare_state_for(type)
+
+            state[type][action] << options.compact
+            state[type][action].uniq!
+          end
 
           def prepare_state_for(type)
             state[type] ||= {
@@ -42,26 +54,38 @@ module Elasticsearch
             }
           end
 
-          def resource_class(resource)
-            resource.respond_to?(:document_type) ? resource : resource.class
+          def resource_class(resource_or_relation)
+            resource_or_relation.respond_to?(:document_type) ? resource_or_relation : resource_or_relation.class
           end
 
-          def document_type(resource)
-            resource_class(resource).document_type.to_sym
+          def document_type(resource_or_relation)
+            resource_class(resource_or_relation).document_type.to_sym
           end
 
-          def child?(resource)
-            parent_type(resource).present?
+          def child?(resource_or_relation)
+            parent_type(resource_or_relation).present?
           end
 
-          def parent_type(resource)
-            resource_class(resource).mapping.options.dig(:_parent, :type)
+          def parent_type(resource_or_relation)
+            resource_class(resource_or_relation).mapping.options.dig(:_parent, :type)
           end
 
           def parent_id(resource)
             return unless child?(resource)
 
             resource.public_send "#{parent_type resource}_id"
+          end
+
+          def pluck_ids(relation)
+            if child?(relation)
+              relation.pluck(:id, "#{parent_type relation}_id").map do |ids|
+                yield _id: ids[0], _parent: ids[1]
+              end
+            else
+              relation.pluck(:id).map do |id|
+                yield _id: id
+              end
+            end
           end
       end
     end

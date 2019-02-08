@@ -2,6 +2,7 @@
 
 class Post < ApplicationRecord
   include Elasticsearch::Model
+  include Elasticsearch::Model::TransactionalCallbacks
 
   belongs_to :user
 

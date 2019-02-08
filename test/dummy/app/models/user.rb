@@ -2,6 +2,7 @@
 
 class User < ApplicationRecord
   include Elasticsearch::Model
+  include Elasticsearch::Model::TransactionalCallbacks
 
   has_many :posts
 
