@@ -44,6 +44,19 @@ module Elasticsearch::Model::TransactionalCallbacks
       }, queue.to_h)
     end
 
+    test 'queueing an activerecord relation' do
+      users = User.all
+      posts = Post.all
+
+      queue.push_all :index, users
+      queue.push_all :index, posts
+
+      assert_equal({
+        user: { index: users.map { |user| { _id: user.id } }, update: [], delete: [] },
+        post: { index: posts.map { |post| { _id: post.id, _parent: post.user_id } }, update: [], delete: [] }
+      }, queue.to_h)
+    end
+
     private
 
       def described_class
