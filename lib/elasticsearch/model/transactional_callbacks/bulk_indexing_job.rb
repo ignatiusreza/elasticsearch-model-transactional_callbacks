@@ -55,7 +55,7 @@ module Elasticsearch
           end
 
           def transform_index(resource, option)
-            { index: option.merge(data: serialize(resource)) }
+            { index: option.merge(data: to_indexed_json(resource)) }
           end
           # elasticsearch do support update operation in their bulk API,
           # but it will fail in case the update is done to missing documents,
@@ -70,7 +70,7 @@ module Elasticsearch
             { delete: option }
           end
 
-          def serialize(resource)
+          def to_indexed_json(resource)
             return resource.as_indexed_json if resource.respond_to?(:as_indexed_json)
 
             resource.__elasticsearch__.as_indexed_json
