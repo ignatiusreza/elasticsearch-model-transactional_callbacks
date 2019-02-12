@@ -18,8 +18,8 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
-  spec.add_dependency 'elasticsearch-model'
-  spec.add_dependency 'rails', '~> 5.2.2'
+  spec.add_dependency 'elasticsearch-model', '>= 5.0.0'
+  spec.add_dependency 'rails', '>= 5.0.0'
 
   spec.add_development_dependency 'minitest-ci'
   spec.add_development_dependency 'minitest-stub_any_instance'
