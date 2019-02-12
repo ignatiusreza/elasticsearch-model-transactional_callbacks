@@ -16,6 +16,10 @@ jobs:
             - bundler--{{ checksum "Gemfile" }}
             - bundler
 
+      - run:
+          name: Wait For Elasticsearch
+          command: timeout 10 sh -c 'until nc -z localhost 9200; do sleep 1; done'
+
       - run: bundle check || bundle install
 
       - save_cache:
