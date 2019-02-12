@@ -3,6 +3,8 @@ jobs:
   build:
     docker:
       - image: circleci/ruby:2.6
+        environment:
+          BUNDLE_PATH: ~/.bundle
       - image: elasticsearch:5.6-alpine
     steps:
       - checkout
@@ -19,7 +21,7 @@ jobs:
       - save_cache:
           key: bundler--{{ checksum "Gemfile" }}--{{ checksum "elasticsearch-model-transactional_callbacks.gemspec" }}
           paths:
-            - /usr/local/bundle
+            - ~/.bundle
 
       - run:
           name: Setup Test Database
