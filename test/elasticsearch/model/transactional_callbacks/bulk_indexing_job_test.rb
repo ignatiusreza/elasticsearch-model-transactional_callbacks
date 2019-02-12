@@ -86,6 +86,21 @@ module Elasticsearch::Model::TransactionalCallbacks
       end
     end
 
+    test 'no n+1 when indexing resources with relation' do
+      tags_loaded = true
+      mock = lambda {
+        tags_loaded &&= tags.loaded?
+
+        __minitest_any_instance_stub__as_indexed_json
+      }
+
+      Post.stub_any_instance :as_indexed_json, mock do
+        described_class.perform_now post: { index: Post.all.map { |post| { _id: post.id } } }
+      end
+
+      assert tags_loaded
+    end
+
     test 'logging errors' do
       response = { 'errors' => 1, 'items' => ['fake items'] }
       logger = Minitest::Mock.new
