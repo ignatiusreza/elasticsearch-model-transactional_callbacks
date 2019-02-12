@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.email       = ['lyoneil.de.sire@gmail.com']
   spec.homepage    = 'https://github.com/ignatiusreza/elasticsearch-model-transactional_callbacks'
   spec.summary     = 'Extend ElasticSearch::Model with transactional callbacks for asynchronous indexing'
-  spec.description = 'Extend ElasticSearch::Model with transactional callbacks for asynchronous indexing'
+  spec.description = 'Reduce load from your application server by offloading indexing into background jobs'
   spec.license     = 'MIT'
 
   spec.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
