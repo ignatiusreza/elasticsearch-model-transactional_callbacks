@@ -19,7 +19,7 @@ jobs:
       - save_cache:
           key: bundler--{{ checksum "Gemfile" }}--{{ checksum "elasticsearch-model-transactional_callbacks.gemspec" }}
           paths:
-            - ~/.cache/bundle
+            - /usr/local/bundle
 
       - run:
           name: Setup Test Database
