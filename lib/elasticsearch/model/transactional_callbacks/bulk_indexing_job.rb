@@ -32,8 +32,9 @@ module Elasticsearch
 
           def transform_batches(klass, action_map)
             reverse_map = build_reverse_map(action_map)
+            resources = klass.where id: reverse_map.keys
 
-            klass.where(id: reverse_map.keys).find_each.map { |resource|
+            preload(resources).find_each.map { |resource|
               action, option = reverse_map[resource.id]
 
               send "transform_#{action}", resource, option
@@ -52,6 +53,10 @@ module Elasticsearch
                 memo[option[:_id]] = [action, option]
               end
             }
+          end
+
+          def preload(resources)
+            resources.respond_to?(:preload_for_import) ? resources.preload_for_import : resources
           end
 
           def transform_index(resource, option)
