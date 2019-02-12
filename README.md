@@ -1,5 +1,9 @@
 # Elasticsearch::Model::TransactionalCallbacks
 
+[![Gem Version](https://badge.fury.io/rb/elasticsearch-model-transactional_callbacks.svg)](https://badge.fury.io/rb/elasticsearch-model-transactional_callbacks)
+[![CircleCI](https://circleci.com/gh/ignatiusreza/elasticsearch-model-transactional_callbacks.svg?style=svg)](https://circleci.com/gh/ignatiusreza/elasticsearch-model-transactional_callbacks)
+[![Maintainability](https://api.codeclimate.com/v1/badges/465f50566c9c27590879/maintainability)](https://codeclimate.com/github/ignatiusreza/elasticsearch-model-transactional_callbacks/maintainability)
+
 The [`elasticsearch-model`](https://github.com/elastic/elasticsearch-rails/tree/master/elasticsearch-model)
 works great in simplifying the integration of Ruby classes ("models") with the
 [Elasticsearch](http://www.elasticsearch.org/) search and analytics engine.
