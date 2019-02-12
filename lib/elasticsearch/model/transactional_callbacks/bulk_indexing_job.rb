@@ -24,7 +24,7 @@ module Elasticsearch
 
             response = bulk_index klass, body
 
-            Rails.logger.error "[ELASTICSEARCH] Bulk request failed: #{response['items']}" if response&.dig('errors')
+            ::Rails.logger.error "[ELASTICSEARCH] Bulk request failed: #{response['items']}" if response&.dig('errors')
           end
         end
 
