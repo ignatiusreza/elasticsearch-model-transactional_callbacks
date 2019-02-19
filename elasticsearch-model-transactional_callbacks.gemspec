@@ -13,19 +13,13 @@ Gem::Specification.new do |spec|
   spec.email       = ['lyoneil.de.sire@gmail.com']
   spec.homepage    = 'https://github.com/ignatiusreza/elasticsearch-model-transactional_callbacks'
   spec.summary     = 'Extend ElasticSearch::Model with transactional callbacks for asynchronous indexing'
-  spec.description = 'Extend ElasticSearch::Model with transactional callbacks for asynchronous indexing'
+  spec.description = 'Reduce load from your application server by offloading indexing into background jobs'
   spec.license     = 'MIT'
-
-  # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
-  # to allow pushing to a single host or delete this section to allow pushing to any host.
-  raise 'RubyGems 2.0 or newer is required to protect against public gem pushes.' unless spec.respond_to?(:metadata)
-
-  spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
 
   spec.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
-  spec.add_dependency 'elasticsearch-model'
-  spec.add_dependency 'rails', '~> 5.2.2'
+  spec.add_dependency 'elasticsearch-model', '>= 5.0.0'
+  spec.add_dependency 'rails', '>= 5.0.0'
 
   spec.add_development_dependency 'minitest-ci'
   spec.add_development_dependency 'minitest-stub_any_instance'
