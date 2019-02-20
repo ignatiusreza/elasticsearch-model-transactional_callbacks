@@ -10,12 +10,12 @@ works great in simplifying the integration of Ruby classes ("models") with the
 But, it come short with support for updating the indexed documents asynchronously.
 
 Built-in support for updating the indexed documents comes in the form of `Elasticsearch::Model::Callbacks`
-which will updates each related documents individually inside the same thread where the changes were made.
-Depending on the size of your application, and the size of the changes itself, triggering N number of
-indexing request to Elasticsearch could amount to nothing, or it could slow down the request-response
+which will update each related document individually inside the same thread where the changes were made.
+Depending on the size of your application, and the size of the changes themselves, triggering N number of
+indexing requests to Elasticsearch could amount to nothing, or it could slow down the request-response
 cycle considerably and render it unusable.
 
-This gem aim to solve this by providing a way to update the index asynchronously via `ActiveJob`.
+This gem aims to solve this by providing a way to update the index asynchronously via `ActiveJob`.
 
 ## Usage
 
@@ -64,7 +64,7 @@ class Post < ApplicationRecord
 end
 ```
 
-to get around this, you can define a `scope` called `preload_for_index` like so:
+to get around this, you can define a `scope` called `preload_for_import` like so:
 
 ```ruby
 class Post < ApplicationRecord
@@ -77,7 +77,7 @@ end
 and it will be automatically called by the library.
 
 ## Compatibility
-This library is compatible and tested with Elasticsearch 5. Some works might be needed to make it works with Elasticsearch 6.
+This library is compatible and tested with Elasticsearch 5. Some work might be needed to make it work with Elasticsearch 6.
 
 ## Installation
 Add this line to your application's Gemfile:
@@ -97,12 +97,12 @@ $ gem install elasticsearch-model-transactional_callbacks
 ```
 
 ## Contributing
-Any and all kind of help are welcomed! Especially interested in:
+Any and all kinds of help are welcome! Especially interested in:
 
-- sample use cases which are not yet supported,
+- sample use cases which are not yet supported
 - compatibility with elasticsearch 6.0
 
-feel free to file an issue/PR with sample mapping!
+Feel free to file an issue/PR with sample mapping!
 
 ## License
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
